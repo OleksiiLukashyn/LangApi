@@ -1,0 +1,38 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">LangService Client</h1>
+
+    <form method="post">
+        <button asp-route-handler="All">All</button>
+    </form>
+
+    <form method="post">
+        Id <input type="text" name="Lang.Id" />
+        <button asp-route-handler="One">One</button>
+    </form>
+
+    <form method="post">
+        Id <input type="text" name="Lang.Id" />
+        Year <input type="text" name="Lang.Year" />
+        <button asp-route-handler="Create">Create</button>
+    </form>
+
+    <form method="post">
+        Id <input type="text" name="Lang.Id" />
+        Year <input type="text" name="Lang.Year" />
+        <button asp-route-handler="Edit">Edit</button>
+    </form>
+
+    <form method="post">
+        Id <input type="text" name="Lang.Id" />
+        <button asp-route-handler="Delete">Delete</button>
+    </form>
+
+    <hr />
+    <div>@Model.JsonAnswer</div>
+</div>
