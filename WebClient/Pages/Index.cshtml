@@ -7,30 +7,38 @@
 <div class="text-center">
     <h1 class="display-4">LangService Client</h1>
 
-    <form method="post">
-        <button asp-route-handler="All">All</button>
+    <form class="mb-3" method="post">
+        <button class="btn btn-outline-secondary" asp-route-handler="All">Show All</button>
     </form>
 
-    <form method="post">
-        Id <input type="text" name="Lang.Id" />
-        <button asp-route-handler="One">One</button>
+    <form class="input-group mb-3" method="post">
+        <input class="form-control" placeholder="Lang id" type="text" name="Lang.Id" />
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" asp-route-handler="One">One</button>
+        </div>
     </form>
 
-    <form method="post">
-        Id <input type="text" name="Lang.Id" />
-        Year <input type="text" name="Lang.Year" />
-        <button asp-route-handler="Create">Create</button>
+    <form class="input-group mb-3" method="post">
+        <input class="form-control" placeholder="Lang id" type="text" name="Lang.Id" />
+        <input class="form-control" placeholder="Year" type="text" name="Lang.Year" />
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" asp-route-handler="Create">Create</button>
+        </div>
     </form>
 
-    <form method="post">
-        Id <input type="text" name="Lang.Id" />
-        Year <input type="text" name="Lang.Year" />
-        <button asp-route-handler="Edit">Edit</button>
+    <form class="input-group mb-3" method="post">
+        <input class="form-control" placeholder="Lang id" type="text" name="Lang.Id" />
+        <input class="form-control" placeholder="Year" type="text" name="Lang.Year" />
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" asp-route-handler="Edit">Edit</button>
+        </div>
     </form>
 
-    <form method="post">
-        Id <input type="text" name="Lang.Id" />
-        <button asp-route-handler="Delete">Delete</button>
+    <form class="input-group mb-3" method="post">
+        <input class="form-control" placeholder="Lang id" type="text" name="Lang.Id" />
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" asp-route-handler="Delete">Delete</button>
+        </div>
     </form>
 
     <hr />

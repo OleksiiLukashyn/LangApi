@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
+using System.Text;
 
 namespace LangApi
 {
@@ -27,6 +29,19 @@ namespace LangApi
                 new Lang {Id = "cpp", Year = 1985}
             };
             services.AddSingleton(_langs);
+
+            //------  "Bearer" scheme
+            services.AddAuthentication()
+                .AddCookie(cfg => { cfg.SlidingExpiration = true; })
+                .AddJwtBearer(ControlFlowGraph =>
+                {
+                    ControlFlowGraph.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidIssuer = LangTokenOptions.Issuer,
+                        ValidAudience = LangTokenOptions.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(LangTokenOptions.Key))
+                    };
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

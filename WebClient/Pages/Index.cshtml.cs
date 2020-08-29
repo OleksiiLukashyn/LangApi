@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace WebClient.Pages
 {
@@ -22,24 +23,62 @@ namespace WebClient.Pages
             _httpClient = httpClient;
         }
 
-        public async Task OnPostAll()
+        private async Task<string> GetTokenAsync(string username, string password)
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"/langs");
+            KeyValuePair<string, string>[] formData = {
+            new KeyValuePair<string, string>("username", username),
+            new KeyValuePair<string, string>("password", password)
+        };
+
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, "api/token");
+            request.Content = new FormUrlEncodedContent(formData);
+
             HttpResponseMessage response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
-                JsonAnswer = await response.Content.ReadAsStringAsync();
+            {
+                string contentStr = await response.Content.ReadAsStringAsync();
+                var contentObj = (Newtonsoft.Json.Linq.JObject)JsonConvert.DeserializeObject(contentStr);
+                string token = contentObj["access_token"].ToString();
+                return token;
+            }
+            return null;
+        }
+
+        public async Task OnPostAll()
+        {
+            string token = await GetTokenAsync("aaa", "123456");
+
+            if (token != null)
+            {
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"/langs");
+                request.Headers.Add("Authorization", "Bearer " + token);
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                    JsonAnswer = await response.Content.ReadAsStringAsync();
+                else
+                    JsonAnswer = $"ERROR. Status:{response.StatusCode}";
+            }
             else
-                JsonAnswer = $"ERROR. Status:{response.StatusCode}";
+                JsonAnswer = "No token";
         }
 
         public async Task OnPostOne()
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"/langs/{Lang.Id}");
-            HttpResponseMessage response = await _httpClient.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-                JsonAnswer = await response.Content.ReadAsStringAsync();
+            string token = await GetTokenAsync("aaa", "123456");
+
+            if (token != null)
+            {
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, $"/langs/{Lang.Id}");
+                request.Headers.Add("Authorization", "Bearer " + token);
+
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                    JsonAnswer = await response.Content.ReadAsStringAsync();
+                else
+                    JsonAnswer = $"ERROR. Status:{response.StatusCode}   Lang: {Lang.Id}";
+            }
             else
-                JsonAnswer = $"ERROR. Status:{response.StatusCode}   Lang: {Lang.Id}";
+                JsonAnswer = "No token";
         }
 
         public async Task OnPostCreate()
@@ -49,14 +88,22 @@ namespace WebClient.Pages
                 new KeyValuePair<string, string>("year", Lang.Year.ToString())
             };
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"/langs");
-            request.Content = new FormUrlEncodedContent(formData);
+            string token = await GetTokenAsync("aaa", "123456");
 
-            HttpResponseMessage response = await _httpClient.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-                JsonAnswer = await response.Content.ReadAsStringAsync();
+            if (token != null)
+            {
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, $"/langs");
+                request.Headers.Add("Authorization", "Bearer " + token);
+                request.Content = new FormUrlEncodedContent(formData);
+
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                    JsonAnswer = await response.Content.ReadAsStringAsync();
+                else
+                    JsonAnswer = $"ERROR. Status:{response.StatusCode}   Lang: {Lang.Id}, {Lang.Year}";
+            }
             else
-                JsonAnswer = $"ERROR. Status:{response.StatusCode}   Lang: {Lang.Id}, {Lang.Year}";
+                JsonAnswer = "No token";
         }
 
         public async Task OnPostEdit()
@@ -66,24 +113,42 @@ namespace WebClient.Pages
                 new KeyValuePair<string, string>("year", Lang.Year.ToString())
             };
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"/langs/{Lang.Id}");
-            request.Content = new FormUrlEncodedContent(formData);
+            string token = await GetTokenAsync("aaa", "123456");
 
-            HttpResponseMessage response = await _httpClient.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-                JsonAnswer = await response.Content.ReadAsStringAsync();
+            if (token != null)
+            {
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, $"/langs/{Lang.Id}");
+                request.Headers.Add("Authorization", "Bearer " + token);
+                request.Content = new FormUrlEncodedContent(formData);
+
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                    JsonAnswer = await response.Content.ReadAsStringAsync();
+                else
+                    JsonAnswer = $"ERROR. Status:{response.StatusCode}   Lang: {Lang.Id}, {Lang.Year}";
+            }
             else
-                JsonAnswer = $"ERROR. Status:{response.StatusCode}   Lang: {Lang.Id}, {Lang.Year}";
+                JsonAnswer = "No token";
         }
 
         public async Task OnPostDelete()
         {
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"/langs/{Lang.Id}");
-            HttpResponseMessage response = await _httpClient.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-                JsonAnswer = await response.Content.ReadAsStringAsync();
+
+            string token = await GetTokenAsync("aaa", "123456");
+
+            if (token != null)
+            {
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, $"/langs/{Lang.Id}");
+                request.Headers.Add("Authorization", "Bearer " + token);
+
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
+                if (response.IsSuccessStatusCode)
+                    JsonAnswer = await response.Content.ReadAsStringAsync();
+                else
+                    JsonAnswer = $"ERROR. Status:{response.StatusCode}   Lang: {Lang.Id}";
+            }
             else
-                JsonAnswer = $"ERROR. Status:{response.StatusCode}   Lang: {Lang.Id}";
+                JsonAnswer = "No token";
         }
 
     }
